@@ -2,6 +2,8 @@
 import { getFrameMetadata } from '@coinbase/onchainkit/frame';
 import type { Metadata } from 'next';
 import Page from './card'
+
+
 const frameMetadata = getFrameMetadata({
   buttons: [
     {
