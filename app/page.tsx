@@ -24,9 +24,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
+  const slug = new URLSearchParams(window.location.search).get('slug') || '';
   return (
     <>
-      <h1>Cosmic Cowboys</h1>
+      <h1>{slug}</h1>
     </>
   );
 }
