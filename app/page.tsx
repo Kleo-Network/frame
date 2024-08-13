@@ -1,13 +1,11 @@
+
 import { getFrameMetadata } from '@coinbase/onchainkit/frame';
 import type { Metadata } from 'next';
-import { useSearchParams } from 'next/navigation';
-
-const searchParams = useSearchParams();
-const slug = searchParams.get('slug') || '';
+import Page from './card'
 const frameMetadata = getFrameMetadata({
   buttons: [
     {
-      label: `Begin for ${slug}`
+      label: `Begin for Vaibhavgeek`
     }
   ],
   image: `https://quotefancy.com/media/wallpaper/3840x2160/8151357-Hello-World-Wallpaper.jpg`,
@@ -26,12 +24,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
- 
+export default function Main() {
+  
+   
 
   return (
     <>
-      <h1>{slug}</h1>
+      <Page />
     </>
   );
 }
