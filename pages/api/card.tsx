@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 const HUB_URL = process.env['HUB_URL'] || 'http://0.0.0.0:5001';
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-
+const kleoURL = process.env.KLEO_CONNECT || 'https://app.kleo.network/'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         try {
@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             console.log("prev card", prevCard);
             const imageUrl = `${baseUrl}/api/image?card_id=${card.id}&date=${date}`;
             const postUrl = `${baseUrl}/api/card?slug=${username}-${date}-${card.id}-${prevCard || null}-${nextCard || null}`;
-
+            const profileUrl = `${kleoURL}/profileV2/${username}`;
             const button1Text = prevCard ? "Previous" : null;
             const button2Text = nextCard ? "Next" : null;
             const button3Text = 'View Profile'
@@ -50,7 +50,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           <meta name="fc:frame:post_url" content="${postUrl}">
           ${button1Text ? `<meta name="fc:frame:button:1" content="${button1Text}">` : ''}
           ${button2Text ? `<meta name="fc:frame:button:2" content="${button2Text}">` : ''}
-           ${button3Text ? `<meta name="fc:frame:button:3" content="${button3Text}">` : ''}
+          <meta name="fc:frame:button:3" content="View Profile" />
+          <meta name="fc:frame:button:3:action" content="link" />
+          <meta name="fc:frame:button:3:target" content="${profileUrl}" />
         </head>
         <body>
           ${card.content}

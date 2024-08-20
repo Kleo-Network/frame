@@ -111,7 +111,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 style={{ width: '16px', height: '16px' }}
               />
               <span style={{ fontSize: '12px' }}>
-                {url.title.length > 25 ? url.title.slice(0, 25) + '...' : url.title}
+                {url.title.length > 35 ? url.title.slice(0, 25) + '...' : url.title}
               </span>
             </div>
           ))}

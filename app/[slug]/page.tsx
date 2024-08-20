@@ -1,7 +1,9 @@
+import { profile } from "console";
 import { Metadata, ResolvingMetadata } from "next";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 const HUB_URL = process.env.HUB_URL || 'http://0.0.0.0:5001';
+const kleoURL = process.env.KLEO_CONNECT || 'https://app.kleo.network/'
 
 export default async function Page({ params }: { params: { slug: string } }) {
     console.log("slug", params.slug)
@@ -41,7 +43,7 @@ export async function generateMetadata(
     const data = await response.json();
     console.log("data", data)
     const { card, nextCard, prevCard } = data;
-    
+    const profileUrl = `${kleoURL}/profileV2/${username}`
     const fcMetadata: Record<string, string> = {
         "fc:frame": "vNext",
         "fc:frame:image": `${baseUrl}/api/image?card_id=${card.id}&date=${date}`,
@@ -55,6 +57,10 @@ export async function generateMetadata(
         fcMetadata["fc:frame:button:2"] = 'Next';
     }
     fcMetadata["fc:frame:button:3"] = 'View Profile';
+    fcMetadata["fc:frame:button:3:action"] = 'link';
+    fcMetadata["fc:frame:button:3:target"] = profileUrl;
+   
+    
     return {
         title: card.content,
         openGraph: {
