@@ -55,12 +55,19 @@ export async function generateMetadata(
     }
     if (nextCard) {
         fcMetadata["fc:frame:button:2"] = 'Next';
+        fcMetadata["fc:frame:button:3"] = 'View Profile';
+        fcMetadata["fc:frame:button:3:action"] = 'link';
+        fcMetadata["fc:frame:button:3:target"] = profileUrl;
     }
-    fcMetadata["fc:frame:button:3"] = 'View Profile';
-    fcMetadata["fc:frame:button:3:action"] = 'link';
-    fcMetadata["fc:frame:button:3:target"] = profileUrl;
-   
-    
+    else {
+        fcMetadata["fc:frame:button:2"] = 'View Profile';
+        fcMetadata["fc:frame:button:2:action"] = 'link';
+        fcMetadata["fc:frame:button:2:target"] = profileUrl;
+    }
+
+
+
+
     return {
         title: card.content,
         openGraph: {
