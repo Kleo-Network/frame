@@ -1,8 +1,8 @@
 import { profile } from "console";
 import { Metadata, ResolvingMetadata } from "next";
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-const HUB_URL = process.env.HUB_URL || 'http://0.0.0.0:5001';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://frame.kleo.network';
+const HUB_URL = process.env.HUB_URL || 'https://api.kleo.network';
 const kleoURL = process.env.KLEO_CONNECT || 'https://app.kleo.network/'
 
 export default async function Page({ params }: { params: { slug: string } }) {
@@ -50,23 +50,26 @@ export async function generateMetadata(
         "fc:frame:post_url": `${baseUrl}/api/card?slug=${username}-${date}-${card.id}-${prevCard || ''}-${nextCard || ''}`,
     };
 
+    let buttonCount = 0;
+
+    // Button 1: Previous (if exists) or Next (if prev doesn't exist)
     if (prevCard) {
         fcMetadata["fc:frame:button:1"] = 'Previous';
+        buttonCount++;
+    } else if (nextCard) {
+        fcMetadata["fc:frame:button:1"] = 'Next';
+        buttonCount++;
     }
-    if (nextCard) {
+
+    if (prevCard && nextCard) {
         fcMetadata["fc:frame:button:2"] = 'Next';
-        fcMetadata["fc:frame:button:3"] = 'View Profile';
-        fcMetadata["fc:frame:button:3:action"] = 'link';
-        fcMetadata["fc:frame:button:3:target"] = profileUrl;
-    }
-    else {
-        fcMetadata["fc:frame:button:2"] = 'View Profile';
-        fcMetadata["fc:frame:button:2:action"] = 'link';
-        fcMetadata["fc:frame:button:2:target"] = profileUrl;
+        buttonCount++;
     }
 
-
-
+    buttonCount++;
+    fcMetadata[`fc:frame:button:${buttonCount}`] = 'View Profile';
+    fcMetadata[`fc:frame:button:${buttonCount}:action`] = 'link';
+    fcMetadata[`fc:frame:button:${buttonCount}:target`] = profileUrl;
 
     return {
         title: card.content,

@@ -7,7 +7,7 @@ import * as fs from "fs";
 const fontPath = join(process.cwd(), 'Roboto-Regular.ttf')
 let fontData = fs.readFileSync(fontPath)
 
-const HUB_URL = process.env['HUB_URL'] || 'http://0.0.0.0:5001';
+const HUB_URL = process.env.HUB_URL || 'https://api.kleo.network';
 
 const MILLISECONDS_IN_A_DAY = 1000 * 3600 * 24;
 

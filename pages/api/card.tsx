@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-const HUB_URL = process.env['HUB_URL'] || 'http://0.0.0.0:5001';
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://frame.kleo.network';
+const HUB_URL = process.env.HUB_URL || 'https://api.kleo.network';
 const kleoURL = process.env.KLEO_CONNECT || 'https://app.kleo.network/'
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
@@ -13,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const buttonId = req.body.untrustedData.buttonIndex;
 
       let targetCardId = current_card_id;
-      if (buttonId === 2 && next_card_id) {
+      if ((buttonId === 2 && previous_card_id) || (buttonId === 1 && !previous_card_id)) {
         targetCardId = next_card_id;
       } else if (buttonId === 1 && previous_card_id) {
         targetCardId = previous_card_id;
@@ -22,7 +23,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log("target card id", targetCardId)
 
       const apiUrl = `${HUB_URL}/api/v1/core/cards/published/${username}/adjacent?date=${date}&card_id=${targetCardId}`;
-
 
       const response = await fetch(apiUrl);
       const data = await response.json();
@@ -34,9 +34,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const imageUrl = `${baseUrl}/api/image?card_id=${card.id}&date=${date}`;
       const postUrl = `${baseUrl}/api/card?slug=${username}-${date}-${card.id}-${prevCard || null}-${nextCard || null}`;
       const profileUrl = `${kleoURL}/profileV2/${username}`;
-      const button1Text = prevCard ? "Previous" : null;
-      const button2Text = nextCard ? "Next" : null;
-      const button3Text = 'View Profile'
+
+      let buttonHtml = '';
+      let buttonCount = 0;
+
+      // Button 1: Previous (if exists) or Next (if prev doesn't exist)
+      if (prevCard) {
+        buttonHtml += `<meta name="fc:frame:button:1" content="Previous">`;
+        buttonCount++;
+      } else if (nextCard) {
+        buttonHtml += `<meta name="fc:frame:button:1" content="Next">`;
+        buttonCount++;
+      }
+
+      // Button 2: Next (only if prev exists and next exists)
+      if (prevCard && nextCard) {
+        buttonHtml += `<meta name="fc:frame:button:2" content="Next">`;
+        buttonCount++;
+      }
+
+      // Last Button: Always View Profile
+      buttonCount++;
+      buttonHtml += `
+        <meta name="fc:frame:button:${buttonCount}" content="View Profile">
+        <meta name="fc:frame:button:${buttonCount}:action" content="link">
+        <meta name="fc:frame:button:${buttonCount}:target" content="${profileUrl}">
+      `;
+
       res.setHeader('Content-Type', 'text/html');
       res.status(200).send(`
       <!DOCTYPE html>
@@ -48,16 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           <meta name="fc:frame" content="vNext">
           <meta name="fc:frame:image" content="${imageUrl}">
           <meta name="fc:frame:post_url" content="${postUrl}">
-          ${button1Text ? `<meta name="fc:frame:button:1" content="${button1Text}">` : ''}
-          ${button2Text ? `<meta name="fc:frame:button:2" content="${button2Text}">
-            <meta name="fc:frame:button:3" content="View Profile" />
-          <meta name="fc:frame:button:3:action" content="link" />
-          <meta name="fc:frame:button:3:target" content="${profileUrl}" />
-          ` : `<meta name="fc:frame:button:2" content="View Profile" />
-          <meta name="fc:frame:button:2:action" content="link" />
-          <meta name="fc:frame:button:2:target" content="${profileUrl}" />`}
-
-          
+          ${buttonHtml}
         </head>
         <body>
           ${card.content}
